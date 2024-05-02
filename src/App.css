@@ -1,0 +1,178 @@
+*{
+    margin:0;
+    padding:0;
+    text-decoration: none;
+    
+}
+.container{
+    display:flex;
+    background-color: #e9ecef;
+}
+/* main{
+ 
+    width: 89.5%;
+    padding: 49px;
+    margin-top: 11px;
+   
+    border-radius: 10px;
+    margin-left: 10px;
+    height: 86vh;
+    background-color: #e9ecef;
+
+} */
+/* .map-canvas{ */
+    /* width: 73.5%; */
+    /* padding: 49px; */
+    /* margin-top: 11px;
+   
+    border-radius: 10px;
+    margin-left: 10px;
+    height: 97.3vh;
+    background-color: #e9ecef; */
+
+/* } */
+.sidebar {
+    background: #e9ecef;
+    height: 100vh; /* Set initial height to viewport height */
+    width: 200px;
+    overflow-y: auto; /* Allow vertical scrolling when content exceeds sidebar height */
+    transition: all 0.5s;
+}
+
+/* Hide the scrollbar */
+.sidebar::-webkit-scrollbar {
+    width: 0; /* Set the width of the scrollbar to 0 */
+}
+
+.top_section{
+    display: flex;
+    align-items:center;
+    padding:10px 15px;
+}
+.logo{
+    font-size: 30px;
+}
+.bars{
+    display: flex;
+    font-size: 25px;
+    margin-left: 50px;
+    color: #000;
+   
+    
+}
+
+.link{
+    display: flex;
+    color: #fff;
+    padding: 10px 15px;
+    gap: 15px;
+    transition: all 0.5s;
+}
+.link:hover{
+    background:lightskyblue;
+    color: #000;
+    transition: all 0.5s;
+}
+.active{
+    background: lightskyblue;
+    color: #000;
+}
+.icon, .link_text{
+    font-size: 20px;
+}
+.leaflet-container {
+    margin-top: 11px;
+   
+    border-radius: 10px;
+    margin-left: 10px;
+    height: 97.3vh;
+    background-color: #e9ecef;
+
+    /* width: 100%; */
+    
+  }
+  /* .mapInput{
+    position: 'absolute';
+    z-index: '1000';
+    
+  } */
+  .search-button{
+    position: absolute;
+    top: 23px;
+    left: 370px;
+    z-index: 1000;
+    color: #495057;
+    border: none;
+    font-size: 18px;
+    background: none;
+
+  }
+  .search-container {
+    position: absolute;
+    top: 10px;
+    left: 100px;
+    z-index: 1000;
+    border-radius: 25px;
+    width: 287px;
+    height: 27px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: none;
+    padding: 10px;
+  }
+  .popover {
+    z-index: 1000;
+    position: absolute;
+    top: 50px; /* Adjust position as needed */
+    right: 10px; /* Adjust position as needed */
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* User icon styles */
+  .circle-container {
+    z-index: 1000;
+    position: absolute;
+    
+    top: 10px;
+    right: 10px;
+    width: 40px;
+    height: 40px;
+    background-color: #000;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+  }
+  
+  /* User icon styles */
+  .user-icon {
+    font-size: 20px; /* Adjust icon size as needed */
+    color: #fff; /* Set icon color to white */
+  }
+  
+  .location-icon{
+    margin-top: 14px;
+    left: 423px;
+    width: 40px;
+    height: 40px;
+    /* background-color: #000; */
+    z-index: 1000;
+    position: absolute;
+    font-size: 31px;
+     /* Adjust icon size as needed */
+     background-color: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease; /* Add transition for smooth hover effect */
+}
+
+.location-icon:hover {
+  background-color: #cccccc; /* Darker background color on hover */
+}
