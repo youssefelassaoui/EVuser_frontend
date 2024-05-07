@@ -107,18 +107,7 @@
     background: none;
 
   }
-  .search-container {
-    position: absolute;
-    top: 10px;
-    left: 100px;
-    z-index: 1000;
-    border-radius: 25px;
-    width: 287px;
-    height: 27px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    border: none;
-    padding: 10px;
-  }
+  
   .popover {
     z-index: 1000;
     position: absolute;
@@ -136,8 +125,8 @@
     z-index: 1000;
     position: absolute;
     
-    top: 10px;
-    right: 10px;
+    top: 20px;
+    right: 22px;
     width: 40px;
     height: 40px;
     background-color: #000;
@@ -155,8 +144,8 @@
   }
   
   .location-icon{
-    margin-top: 14px;
-    left: 423px;
+    
+  
     width: 40px;
     height: 40px;
     /* background-color: #000; */
@@ -175,4 +164,73 @@
 
 .location-icon:hover {
   background-color: #cccccc; /* Darker background color on hover */
+}
+.search-container {
+    position: absolute;
+    top: 10px;
+    left: 100px;
+    z-index: 1000;
+    border-radius: 25px; /* Apply initial border radius to the input */
+    width: 300px;
+    /* height: 27px; */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: none;
+    padding: 10px;
+  }
+.ul-list_search {
+    z-index: 1000;
+    position: absolute;
+    background: white;
+    width: 320px;
+    margin-top: 57px; /* Adjust margin to match the top position of the input */
+    left: 100px; /* Adjust margin to match the left position of the input */
+    border-radius: 0 0 25px 25px; /* Apply border radius only to the bottom of the list */
+    text-align: left;
+    list-style: none;
+    padding: 0;
+  }
+
+
+.ul-list_search li {
+    border-radius: 10px;
+
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+}
+
+.ul-list_search li:hover {
+  background-color: #f0f0f0;
+  cursor: pointer;
+}
+
+
+.connector-icons-container img {
+  width: 50px; /* Set the width of the images */
+  height: 50px; /* Set the height of the images */
+  margin: 5px; /* Add margin between the images */
+}
+.connector-icons-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.icon-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 3 columns */
+  gap: 10px; /* Gap between icons */
+}
+
+.icon-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.select-all {
+  margin-bottom: 10px;
+}
+.css-ix7x7o-MuiPaper-root-MuiAccordion-root::before{
+  position: relative !important;
 }

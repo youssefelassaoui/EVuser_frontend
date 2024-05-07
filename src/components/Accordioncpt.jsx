@@ -1,141 +1,211 @@
-import * as React from 'react';
-import { styled } from '@mui/material/styles';
-import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp';
-import MuiAccordion from '@mui/material/Accordion';
-import MuiAccordionSummary from '@mui/material/AccordionSummary';
-import MuiAccordionDetails from '@mui/material/AccordionDetails';
-import Typography from '@mui/material/Typography';
+import * as React from "react";
+import { styled } from "@mui/material/styles";
+import ArrowForwardIosSharpIcon from "@mui/icons-material/ArrowForwardIosSharp";
+import MuiAccordion from "@mui/material/Accordion";
+import MuiAccordionSummary from "@mui/material/AccordionSummary";
+import MuiAccordionDetails from "@mui/material/AccordionDetails";
+import Typography from "@mui/material/Typography";
+import { IoFilterCircleOutline } from "react-icons/io5";
+import Slider from "@mui/material/Slider";
+import { GrMapLocation } from "react-icons/gr";
+import ConnectorIcons from "./ConnectorIcons"; // Import ConnectorIcons component
+import { Stack, Grid } from "@mui/material"; // Import Stack and Grid
+import evstationIcon_slow from "./map";
+function valuetext(value) {
+  return `${value}°C`;
+}
 
 const Accordion = styled((props) => (
   <MuiAccordion disableGutters elevation={0} square {...props} />
 ))(({ theme }) => ({
-  
   border: `1px solid ${theme.palette.divider}`,
-  boderRadius: '20px',
-  boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)', // Add shadow
+  borderRadius: "20px",
+  boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)", // Add shadow
   marginBottom: theme.spacing(0), // Add space between each accordion item
-  '&:hover': {
-    backgroundColor: theme.palette.action.hover // Change background color on hover
-  },
+  // "&:hover": {
+  //   backgroundColor: theme.palette.action.hover, // Change background color on hover
+  // },
 }));
 
 const AccordionSummary = styled((props) => (
   <MuiAccordionSummary
-    expandIcon={<ArrowForwardIosSharpIcon sx={{ fontSize: '0.9rem' }} />}
+    expandIcon={<ArrowForwardIosSharpIcon sx={{ fontSize: "0.9rem" }} />}
     {...props}
   />
 ))(({ theme }) => ({
-  
-  backgroundColor:
-    theme.palette.mode === 'dark'
-      ? 'rgba(255, 255, 255, .05)'
-      : 'rgba(0, 0, 0, .03)',
-      
-  flexDirection: 'row-verse',
-  '& .MuiAccordionSummary-expandIconWrapper.Mui-expanded': {
-    transform: 'rotate(90deg)',
-    boderRadius: '10px',
+  backgroundColor: theme.palette.mode === "dark",
+  // ? "rgba(255, 255, 255, .05)"
+  // : "rgba(0, 0, 0, .03)",
+  flexDirection: "row-verse",
+  "& .MuiAccordionSummary-expandIconWrapper.Mui-expanded": {
+    transform: "rotate(90deg)",
+    borderRadius: "10px",
   },
-  '& .MuiAccordionSummary-content': {
+  "& .MuiAccordionSummary-content": {
     marginLeft: theme.spacing(2),
-    
-
   },
 }));
 
 const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
   padding: theme.spacing(2),
-  // borderTop: '1px solid rgba(0, 0, 0, .125)',
 }));
 
 export default function CustomizedAccordions() {
-  const [expanded, setExpanded] = React.useState('panel1');
+  const [expanded, setExpanded] = React.useState("panel1");
 
   const handleChange = (panel) => (event, newExpanded) => {
     setExpanded(newExpanded ? panel : false);
   };
 
   return (
-    <div >
-      <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
-        <AccordionSummary aria-controls="panel1d-content" id="panel1d-header">
-          <Typography>Collapsible Group Item #1</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <Typography>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-            malesuada lacus ex, sit amet blandit leo lobortis eget. Lorem ipsum dolor
-            sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex,
-            sit amet blandit leo lobortis eget.
+    <Stack spacing={2}>
+      <Accordion
+        expanded={expanded === "panel1"}
+        onChange={handleChange("panel1")}
+      >
+        <AccordionSummary
+          aria-controls="panel1d-content"
+          id="panel1d-header"
+          sx={{
+            "&:hover": {
+              backgroundColor: "#e6f7ff", // Light blue background on hover
+              cursor: "pointer",
+              borderRadius: expanded === "panel1" ? "20px 20px 0 0" : "20px", // Adjust border radius
+              boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)", // Add shadow on hover
+            },
+            borderRadius: expanded === "panel1" ? "20px 20px 0 0" : "0", // Adjust border radius
+            // Apply border radius when accordion is open
+            backgroundColor: expanded === "panel1" ? "#e6f7ff" : "transparent", // Light blue background when accordion is open
+          }}
+        >
+          <Typography style={{ display: "flex", alignItems: "center" }}>
+            <GrMapLocation
+              color="green"
+              fontSize={20}
+              style={{ marginRight: "20px" }}
+            />
+            Map Legend
           </Typography>
+        </AccordionSummary>
+
+        <AccordionDetails>
+          <Stack direction="row" spacing={2} justifyContent="space-between">
+            <Grid item xs={4}>
+              <Stack direction="column" alignItems="center">
+                <img
+                  src={require("../assets/img/evstationicon_slow.svg").default}
+                  alt="EV Station Icon"
+                  style={{ width: "50px", height: "50px" }}
+                />
+                <Typography variant="body2">Slow Charging</Typography>
+              </Stack>
+            </Grid>
+            {/* Image 1 */}
+            <Grid item xs={4}>
+              <Stack direction="column" alignItems="center">
+                <img
+                  src={require("../assets/img/evstationIcon.svg").default}
+                  alt="EV Station Icon"
+                  style={{ width: "50px", height: "50px" }}
+                />
+                <Typography variant="body2">Fast Charging</Typography>
+              </Stack>
+            </Grid>
+            {/* Image 2 */}
+
+            {/* Image 3 */}
+            <Grid item xs={4}>
+              <Stack direction="column" alignItems="center">
+                <img
+                  src={
+                    require("../assets/img/evstationicon_super_rapid.svg")
+                      .default
+                  }
+                  alt="EV Station Icon"
+                  style={{ width: "50px", height: "50px" }}
+                />
+                <Typography variant="body2">Super Rapid Charging</Typography>
+              </Stack>
+            </Grid>
+          </Stack>
         </AccordionDetails>
       </Accordion>
-      <Accordion expanded={expanded === 'panel2'} onChange={handleChange('panel2')}>
-        <AccordionSummary aria-controls="panel2d-content" id="panel2d-header">
-          <Typography>Collapsible Group Item #2</Typography>
+     
+
+      <Accordion
+        expanded={expanded === "panel2"}
+        onChange={handleChange("panel2")}
+      >
+        <AccordionSummary
+          aria-controls="panel2d-content"
+          id="panel2d-header"
+          sx={{
+            "&:hover": {
+              backgroundColor: "#e6f7ff", // Light blue background on hover
+              cursor: "pointer",
+              borderRadius: expanded === "panel2" ? "20px 20px 0 0" : "20px", // Adjust border radius
+              boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)", // Add shadow on hover
+            },
+            borderRadius: expanded === "panel2" ? "20px 20px 0 0" : "0", // Adjust border radius
+            // Apply border radius when accordion is open
+            backgroundColor: expanded === "panel2" ? "#e6f7ff" : "transparent", // Light blue background when accordion is open
+          }}
+        >
+          <Typography
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <IoFilterCircleOutline
+              color="green"
+              fontSize={27}
+              style={{ width: "27px", height: "27px", marginRight: "12px" }} // Adjust width and height as needed
+            />
+            Filters
+          </Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <Typography>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-            malesuada lacus ex, sit amet blandit leo lobortis eget. Lorem ipsum dolor
-            sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex,
-            sit amet blandit leo lobortis eget.
-          </Typography>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={12}>
+              <div
+                style={{
+                  border: "1px solid #ccc",
+                  padding: "10px",
+                  borderRadius: "20px",
+                }}
+              >
+                <Typography variant="subtitle1" gutterBottom>
+                  Power
+                </Typography>
+                <Slider
+                  aria-label="Power"
+                  defaultValue={20}
+                  getAriaValueText={valuetext}
+                  valueLabelDisplay="auto"
+                  shiftStep={5}
+                  step={5}
+                  marks
+                  min={5}
+                  max={110}
+                />
+              </div>
+            </Grid>
+            <Grid item xs={12} sm={12}>
+              <div
+                style={{
+                  border: "1px solid #ccc",
+                  padding: "10px",
+                  borderRadius: "20px",
+                }}
+              >
+                <ConnectorIcons />
+              </div>
+            </Grid>
+          </Grid>
         </AccordionDetails>
       </Accordion>
-      <Accordion expanded={expanded === 'panel3'} onChange={handleChange('panel3')}>
-        <AccordionSummary aria-controls="panel3d-content" id="panel3d-header">
-          <Typography>Collapsible Group Item #3</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <Typography>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-            malesuada lacus ex, sit amet blandit leo lobortis eget. Lorem ipsum dolor
-            sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex,
-            sit amet blandit leo lobortis eget.
-          </Typography>
-        </AccordionDetails>
-      </Accordion>
-      <Accordion expanded={expanded === 'panel4'} onChange={handleChange('panel4')}>
-        <AccordionSummary aria-controls="panel3d-content" id="panel3d-header">
-          <Typography>Collapsible Group Item #3</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <Typography>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-            malesuada lacus ex, sit amet blandit leo lobortis eget. Lorem ipsum dolor
-            sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex,
-            sit amet blandit leo lobortis eget.
-          </Typography>
-        </AccordionDetails>
-      </Accordion>
-      <Accordion expanded={expanded === 'panel5'} onChange={handleChange('panel5')}>
-        <AccordionSummary aria-controls="panel3d-content" id="panel3d-header">
-          <Typography>Collapsible Group Item #3</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <Typography>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-            malesuada lacus ex, sit amet blandit leo lobortis eget. Lorem ipsum dolor
-            sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex,
-            sit amet blandit leo lobortis eget.
-          </Typography>
-        </AccordionDetails>
-      </Accordion>
-      <Accordion expanded={expanded === 'panel6'} onChange={handleChange('panel6')}>
-        <AccordionSummary aria-controls="panel3d-content" id="panel3d-header">
-          <Typography>Collapsible Group Item #3</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <Typography>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-            malesuada lacus ex, sit amet blandit leo lobortis eget. Lorem ipsum dolor
-            sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex,
-            sit amet blandit leo lobortis eget.
-          </Typography>
-        </AccordionDetails>
-      </Accordion>
-    </div>
+    </Stack>
   );
 }
-

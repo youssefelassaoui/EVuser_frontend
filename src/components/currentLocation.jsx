@@ -1,81 +1,72 @@
-// import React, { useState, useRef } from "react";
-// import { Map, TileLayer, Marker, Popup } from "react-leaflet";
-// import L from "leaflet";
+import React, { useState, useEffect } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 
-// import "leaflet/dist/leaflet.css";
-// import osm from "./osm-providers";
+const useGeoLocation = (onLocationReceived) => {
+    const [location, setLocation] = useState({
+        loaded: false,
+        coordinates: { lat: "", lng: "" },
+    });
 
-// import Header from "components/Header";
-// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-// import useGeoLocation from "hooks/useGeoLocation";
-// import ExternalInfo from "components/ExternalInfo";
+    useEffect(() => {
+        const onSuccess = (location) => {
+            setLocation({
+                loaded: true,
+                coordinates: {
+                    lat: location.coords.latitude,
+                    lng: location.coords.longitude,
+                },
+            });
+            if (onLocationReceived) {
+                onLocationReceived(location.coords.latitude, location.coords.longitude);
+            }
+        };
 
-// const markerIcon = new L.Icon({
-//   iconUrl: require("resources/images/marker.png"),
-//   iconSize: [40, 40],
-//   iconAnchor: [17, 46], //[left/right, top/bottom]
-//   popupAnchor: [0, -46], //[left/right, top/bottom]
-// });
+        const onError = (error) => {
+            setLocation({
+                loaded: true,
+                error: {
+                    code: error.code,
+                    message: error.message,
+                },
+            });
+        };
 
-// const MarkersMap = () => {
-//   const [center, setCenter] = useState({ lat: 13.084622, lng: 80.248357 });
-//   const ZOOM_LEVEL = 6;
-//   const mapRef = useRef();
+        if (!("geolocation" in navigator)) {
+            onError({
+                code: 0,
+                message: "Geolocation not supported",
+            });
+        }
 
-//   const location = useGeoLocation();
+        navigator.geolocation.getCurrentPosition(onSuccess, onError);
+    }, [onLocationReceived]);
 
-//   const showMyLocation = () => {
-//     if (location.loaded && !location.error) {
-//       mapRef.current.leafletElement.flyTo(
-//         [location.coordinates.lat, location.coordinates.lng],
-//         ZOOM_LEVEL,
-//         { animate: true }
-//       );
-//     } else {
-//       alert(location.error.message);
-//     }
-//   };
+    return location;
+};
 
-//   return (
-//     <>
-//       <Header title="React Leaflet Map Example" />
+const MyMap = () => {
+    const location = useGeoLocation();
+    const map = useMap();
 
-//       <ExternalInfo page="leafletCurrentLocation" />
+    useEffect(() => {
+        if (location.loaded) {
+            map.flyTo([location.coordinates.lat, location.coordinates.lng], 13);
+        }
+    }, [location.loaded, location.coordinates, map]);
 
-//       <div className="row">
-//         <div className="col text-center">
-//           <h2>React-leaflet - Get user location</h2>
-//           <p>Get user location and highlight it with a marker</p>
-//           <div className="col">
-//             <Map center={center} zoom={ZOOM_LEVEL} ref={mapRef}>
-//               <TileLayer
-//                 url={osm.maptiler.url}
-//                 attribution={osm.maptiler.attribution}
-//               />
+    return (
+        <MapContainer center={[0, 0]} zoom={13} style={{ height: '400px' }}>
+            <TileLayer
+                url="https://api.maptiler.com/maps/topo-v2/256/{z}/{x}/{y}.png?key=QCJjsLjC3wi0UX43hcRA"
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            />
+            {location.loaded && (
+                <Marker position={[location.coordinates.lat, location.coordinates.lng]}>
+                    <Popup>Your current location</Popup>
+                </Marker>
+            )}
+        </MapContainer>
+    );
+};
 
-//               {location.loaded && !location.error && (
-//                 <Marker
-//                   icon={markerIcon}
-//                   position={[
-//                     location.coordinates.lat,
-//                     location.coordinates.lng,
-//                   ]}
-//                 ></Marker>
-//               )}
-//             </Map>
-//           </div>
-//         </div>
-//       </div>
-
-//       <div className="row my-4">
-//         <div className="col d-flex justify-content-center">
-//           <button className="btn btn-primary" onClick={showMyLocation}>
-//             Locate Me <FontAwesomeIcon icon="globe" />
-//           </button>
-//         </div>
-//       </div>
-//     </>
-//   );
-// };
-
-// export default MarkersMap;
+export default MyMap;
