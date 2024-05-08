@@ -229,8 +229,11 @@
 }
 
 .select-all {
-  margin-bottom: 10px;
+  margin-bottom: 24px;
 }
 .css-ix7x7o-MuiPaper-root-MuiAccordion-root::before{
   position: relative !important;
+}
+.css-1sazv7p-MuiStack-root{
+  margin-left: 10px;
 }

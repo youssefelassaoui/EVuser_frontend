@@ -11,6 +11,7 @@ import { GrMapLocation } from "react-icons/gr";
 import ConnectorIcons from "./ConnectorIcons"; // Import ConnectorIcons component
 import { Stack, Grid } from "@mui/material"; // Import Stack and Grid
 import evstationIcon_slow from "./map";
+
 function valuetext(value) {
   return `${value}°C`;
 }
@@ -50,8 +51,25 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
   padding: theme.spacing(2),
 }));
 
-export default function CustomizedAccordions() {
+export default function CustomizedAccordions({ onChange, onConnectorChange }) {
   const [expanded, setExpanded] = React.useState("panel1");
+  const [powerValue, setPowerValue] = React.useState(0);
+  const handlePowerChange = (event, newValue) => {
+    setPowerValue(newValue); // Update power value state
+  };
+  const handleConnectorChange = (selectedConnectors) => {
+    onConnectorChange(selectedConnectors);
+  };
+
+  // Function to format the value of the slider
+  const valuetext = (value) => {
+    return `${value} kW`;
+  };
+
+  // Function to handle the power filter change and pass it to the parent component
+  const handleFilterChange = () => {
+    onChange(powerValue);
+  };
 
   const handleChange = (panel) => (event, newExpanded) => {
     setExpanded(newExpanded ? panel : false);
@@ -130,7 +148,6 @@ export default function CustomizedAccordions() {
           </Stack>
         </AccordionDetails>
       </Accordion>
-     
 
       <Accordion
         expanded={expanded === "panel2"}
@@ -168,7 +185,13 @@ export default function CustomizedAccordions() {
         </AccordionSummary>
         <AccordionDetails>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={12}>
+            {" "}
+            <Grid
+              item
+              xs={12}
+              sm={12}
+              style={{ position: "relative", marginBottom: "20px" }}
+            >
               <div
                 style={{
                   border: "1px solid #ccc",
@@ -180,16 +203,25 @@ export default function CustomizedAccordions() {
                   Power
                 </Typography>
                 <Slider
-                  aria-label="Power"
-                  defaultValue={20}
+                  onChange={handlePowerChange}
                   getAriaValueText={valuetext}
                   valueLabelDisplay="auto"
-                  shiftStep={5}
-                  step={5}
-                  marks
-                  min={5}
-                  max={110}
+                  shiftStep={0}
+                  min={0}
+                  max={160}
+                  onChangeCommitted={handleFilterChange}
                 />
+                <Typography
+                  variant="subtitle1"
+                  style={{
+                    position: "absolute",
+                    top: "31px",
+                    right: "12px",
+                    fontSize: "0.8rem",
+                  }}
+                >
+                  kW
+                </Typography>
               </div>
             </Grid>
             <Grid item xs={12} sm={12}>
@@ -200,7 +232,7 @@ export default function CustomizedAccordions() {
                   borderRadius: "20px",
                 }}
               >
-                <ConnectorIcons />
+                <ConnectorIcons onChange={onConnectorChange} />
               </div>
             </Grid>
           </Grid>

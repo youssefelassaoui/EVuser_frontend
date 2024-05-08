@@ -51,8 +51,7 @@ const defaultIcon = new L.Icon({
   popupAnchor: [0, -46],
 });
 
-
-const MarkersMap = () => {
+const MarkersMap = ({ powerFilter, selectedConnectors }) => {
   const [center, setCenter] = useState({ lat: 32.420882, lng: -7.1394574 });
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const location = useGeoLocation();
@@ -79,6 +78,12 @@ const MarkersMap = () => {
   }, []);
 
   const mapRef = useRef();
+
+  const filteredStations = stations.filter((station) =>
+    station.power >= powerFilter &&
+    selectedConnectors.some((connector) => station.connector.slice(0, 3) === connector.slice(0, 3))
+  );
+
 
   const handleSearchChange = (e) => {
     setSearchValue(e.target.value);
@@ -144,33 +149,38 @@ const MarkersMap = () => {
           )}
 
           {stations.map((station) => {
-            let icon;
-            if (station.power >= 50) {
-              icon = evstationIcon_super_rapid;
-            } else if (station.power >= 7 && station.power <50) {
-              icon = evstationIcon_fast;
-            } else if (station.power >= 2 && station.power <= 6) {
-              icon = evstationIcon_slow;
-            } 
+            // Only render the station if it meets the power filter criteria
+            if (station.power >= powerFilter) {
+              let icon;
+              if (station.power >= 50) {
+                icon = evstationIcon_super_rapid;
+              } else if (station.power >= 7 && station.power < 50) {
+                icon = evstationIcon_fast;
+              } else if (station.power >= 2 && station.power <= 6) {
+                icon = evstationIcon_slow;
+              }
 
-            return (
-              <Marker
-                key={station.gid}
-                position={[station.latitude, station.longitude]}
-                icon={icon}
-              >
-                <Popup>
-                  <div>
-                    <h4>{station.name}</h4>
-                    <p>{station.address}</p>
-                    <p>Power: {station.power}</p>
-                    <p>Voltage: {station.voltage}</p>
-                    <p>Connector: {station.connector}</p>
-                    <p>Quantity: {station.quantity}</p>
-                  </div>
-                </Popup>
-              </Marker>
-            );
+              return (
+                <Marker
+                  key={station.gid}
+                  position={[station.latitude, station.longitude]}
+                  icon={icon}
+                >
+                  <Popup>
+                    <div>
+                      <h4>{station.name}</h4>
+                      <p>{station.address}</p>
+                      <p>Power: {station.power}</p>
+                      <p>Voltage: {station.voltage}</p>
+                      <p>Connector: {station.connector}</p>
+                      <p>Quantity: {station.quantity}</p>
+                    </div>
+                  </Popup>
+                </Marker>
+              );
+            } else {
+              return null; // Station does not meet power filter criteria, so don't render it
+            }
           })}
         </MapContainer>
         <Stack
