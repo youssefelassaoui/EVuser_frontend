@@ -237,3 +237,36 @@
 .css-1sazv7p-MuiStack-root{
   margin-left: 10px;
 }
+/* Basic enhancements for the layer switcher */
+/* Basic enhancements for the layer switcher */
+/* Increasing specificity by targeting the .leaflet-container parent */
+/* Customizing the appearance of the layers control */
+.leaflet-control-layers {
+  background-color: #fff; /* White background */
+  border: 1px solid #ddd; /* Light grey border */
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3); /* Subtle shadow for depth */
+  overflow: hidden; /* Ensures no content spills outside the border */
+}
+
+.leaflet-control-layers-expanded {
+  padding: 10px; /* Padding around the content inside the control */
+  width: 250px; /* Wider control for better visibility of items */
+}
+
+.leaflet-control-layers label {
+  padding: 5px 10px; /* Padding inside each label for better touch interaction */
+  display: flex; /* Flex display to align icons and text */
+  align-items: center; /* Vertical center alignment of the content */
+  cursor: pointer; /* Pointer cursor on hover */
+}
+
+.leaflet-control-layers label:hover {
+  background-color: #f0f0f0; /* Light grey background on hover for better user feedback */
+}
+
+.leaflet-control-layers-separator {
+  height: 1px; /* Height of the separator line */
+  background-color: #ccc; /* Color of the separator */
+  margin: 5px 0; /* Space above and below the separator */
+}

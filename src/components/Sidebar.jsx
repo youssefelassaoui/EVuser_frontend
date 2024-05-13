@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+ import React, { useState, useEffect } from "react";
 import MapWrapper from "../pages/MapWrapper";
 import MarkersMap from "./map";
 import {
@@ -28,12 +28,21 @@ const Sidebar = () => {
   const [powerFilter, setPowerFilter] = useState(0);
   const [selectedConnectors, setSelectedConnectors] = useState([]);
 
+  // Example check for unnecessary re-renders
+  useEffect(() => {
+    console.log("MarkersMap rendering with", selectedConnectors);
+  }, [selectedConnectors]); // Check how often this logs when interacting with the sidebar
+
   const handlePowerChange = (newValue) => {
     setPowerFilter(newValue);
   };
   const handleConnectorChange = (selected) => {
+    console.log("Updating selected connectors in Sidebar:", selected);
     setSelectedConnectors(selected);
   };
+  
+
+  
 
   return (
     <>
@@ -100,8 +109,8 @@ const Sidebar = () => {
         </Grid>
         <Grid item xs={isOpen ? 8.9 : 11.6}>
           <MarkersMap
-            powerFilter={powerFilter}
-            selectedConnectors={selectedConnectors}
+  powerFilter={powerFilter}
+  selectedConnectors={selectedConnectors}
           />
         </Grid>
       </Grid>
@@ -112,3 +121,4 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
+

@@ -1,4 +1,4 @@
-import * as React from "react";
+ import * as React from "react";
 import { styled } from "@mui/material/styles";
 import ArrowForwardIosSharpIcon from "@mui/icons-material/ArrowForwardIosSharp";
 import MuiAccordion from "@mui/material/Accordion";
@@ -12,9 +12,7 @@ import ConnectorIcons from "./ConnectorIcons"; // Import ConnectorIcons componen
 import { Stack, Grid } from "@mui/material"; // Import Stack and Grid
 import evstationIcon_slow from "./map";
 
-function valuetext(value) {
-  return `${value}°C`;
-}
+
 
 const Accordion = styled((props) => (
   <MuiAccordion disableGutters elevation={0} square {...props} />
@@ -58,8 +56,10 @@ export default function CustomizedAccordions({ onChange, onConnectorChange }) {
     setPowerValue(newValue); // Update power value state
   };
   const handleConnectorChange = (selectedConnectors) => {
+    console.log("Received selected connectors in Accordion:", selectedConnectors);
     onConnectorChange(selectedConnectors);
-  };
+};
+
 
   // Function to format the value of the slider
   const valuetext = (value) => {
@@ -68,8 +68,10 @@ export default function CustomizedAccordions({ onChange, onConnectorChange }) {
 
   // Function to handle the power filter change and pass it to the parent component
   const handleFilterChange = () => {
+    console.log("Final power value being sent:", powerValue);
     onChange(powerValue);
-  };
+};
+
 
   const handleChange = (panel) => (event, newExpanded) => {
     setExpanded(newExpanded ? panel : false);
@@ -232,7 +234,7 @@ export default function CustomizedAccordions({ onChange, onConnectorChange }) {
                   borderRadius: "20px",
                 }}
               >
-                <ConnectorIcons onChange={onConnectorChange} />
+                <ConnectorIcons onConnectorChange={handleConnectorChange} />
               </div>
             </Grid>
           </Grid>

@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Stack, Grid, Checkbox, Typography } from "@mui/material";
 
-const ConnectorIcons = () => {
+const ConnectorIcons = ({ onSelectAll }) => {
   // Define your icons with src and alt attributes
   const icons = [
     {
@@ -17,7 +17,7 @@ const ConnectorIcons = () => {
     {
       src: require("../assets/img/domestique_plug.svg").default,
       alt: "Connector 3",
-      label: "Shukko ",
+      label: "Shukko",
     },
     {
       src: require("../assets/img/three_phase3.svg").default,
@@ -41,7 +41,10 @@ const ConnectorIcons = () => {
     },
   ];
 
-  const [selectedIcons, setSelectedIcons] = useState([]);
+  // Initialize selectedIcons state with all connector types
+  const [selectedIcons, setSelectedIcons] = useState(
+    icons.map((icon) => icon.alt)
+  );
 
   // Function to toggle selection of an icon
   const toggleIconSelection = (icon) => {
@@ -50,18 +53,23 @@ const ConnectorIcons = () => {
     } else {
       setSelectedIcons([...selectedIcons, icon]);
     }
-    console.log("Selected icons:", selectedIcons); // Log selected icons
+    console.log("Selected icons:", selectedIcons);
   };
-
   // Function to handle "Select All" checkbox
-  const handleSelectAll = () => {
-    if (selectedIcons.length === icons.length) {
-      setSelectedIcons([]);
-    } else {
-      setSelectedIcons(icons.map((icon) => icon.alt));
-    }
-    console.log("Selected icons:", selectedIcons); // Log selected icons
+// Function to handle "Select All" checkbox
+const handleSelectAll = () => {
+    const allIcons = icons.map((icon) => icon.alt);
+    const newSelectedIcons = selectedIcons.length === allIcons.length ? [] : allIcons;
+    setSelectedIcons(newSelectedIcons);
+    if (onSelectAll) onSelectAll(newSelectedIcons.length !== 0);
+    console.log("Selected icons:", newSelectedIcons); // Log selected icons
   };
+  
+
+  useEffect(() => {
+    // Call onSelectAll when the component mounts to notify the parent that all connectors are initially selected
+    if (onSelectAll) onSelectAll(true);
+  }, [onSelectAll]);
 
   return (
     <Stack direction="column">
