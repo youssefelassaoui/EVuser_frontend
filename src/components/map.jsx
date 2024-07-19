@@ -1,5 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
-import { MapContainer, TileLayer, Marker, Popup, LayersControl } from "react-leaflet";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Popup,
+  LayersControl,
+} from "react-leaflet";
 import osm from "./osm-providers";
 import { FaSearch, FaUser } from "react-icons/fa";
 import { IoCompassOutline } from "react-icons/io5";
@@ -9,13 +15,13 @@ import axios from "axios";
 import PlaceIcon from "@mui/icons-material/Place"; //localisation
 import BoltIcon from "@mui/icons-material/Bolt"; //power
 import PowerIcon from "@mui/icons-material/Power"; //connector
-import { CircularProgress, LinearProgress } from "@mui/material";
+import { CircularProgress } from "@mui/material";
 import "leaflet/dist/leaflet.css";
-import DirectionsIcon from "@mui/icons-material/Directions";
 import { MenuItem, Paper } from "@mui/material";
 import "leaflet-routing-machine";
 import "leaflet-control-geocoder";
 import "@maptiler/sdk/dist/maptiler-sdk.css";
+import GoogleMapsAutocomplete from "./AutoCompleteInput";
 
 import {
   Stack,
@@ -24,9 +30,16 @@ import {
   InputAdornment,
 } from "@mui/material";
 
-import TopoIcon from "../assets/img/topo.png"
-import SatelliteIcon from "../assets/img/satellite.png"
-import BrightIcon from "../assets/img/bright.png"
+import TopoIcon from "../assets/img/topo.png";
+import SatelliteIcon from "../assets/img/satellite.png";
+import BrightIcon from "../assets/img/bright.png";
+
+const pinDropIcon = new L.Icon({
+  iconUrl: require("../assets/img/file.png"),
+  iconSize: [40, 40],
+  iconAnchor: [17, 46],
+  popupAnchor: [0, -46],
+});
 
 const markerIcon = new L.Icon({
   iconUrl: require("../assets/img/currentlocation_img.png"),
@@ -53,14 +66,8 @@ const evstationIcon_super_rapid = new L.Icon({
   iconAnchor: [17, 46],
   popupAnchor: [0, -46],
 });
-const defaultIcon = new L.Icon({
-  iconUrl: require("../assets/img/logo.png"),
-  iconSize: [50, 50],
-  iconAnchor: [17, 46],
-  popupAnchor: [0, -46],
-});
 
-const MarkersMap = ({ powerFilter, selectedConnectors }) => {
+const MarkersMap = React.memo(({ powerFilter, selectedConnectors }) => {
   const [center, setCenter] = useState({ lat: 32.420882, lng: -7.1394574 });
   const location = useGeoLocation();
   const [stations, setStations] = useState([]);
@@ -71,16 +78,26 @@ const MarkersMap = ({ powerFilter, selectedConnectors }) => {
   const [routeStart, setRouteStart] = useState("");
   const currentRoutingControl = useRef(null);
   const routingControlRef = useRef(null);
+  const [selectedStation, setSelectedStation] = useState(null);
+  const boundingBox = [
+    [40.7128, -74.006], // Southwest corner [latitude, longitude]
+    [40.748817, -73.985428], // Northeast corner [latitude, longitude]
+  ];
 
   useEffect(() => {
     setLoading(true);
     const fetchStations = async () => {
       try {
-        const response = await axios.get("http://127.0.0.1:8000/");
+        const response = await axios.get("http://127.0.0.1:8001/");
         const parsedStations = response.data.map((station) => {
           const wktData = station.geom.match(/\(\(([^)]+)\)\)/)[1];
           const [longitude, latitude] = wktData.split(" ").map(Number);
-          return { ...station, latitude, longitude, kada: station.connector };
+          return {
+            ...station,
+            latitude,
+            longitude,
+            connectorType: station.connector  // Confirm this is the correct field and has data
+        };
         });
         setStations(parsedStations);
         setTimeout(() => {
@@ -99,75 +116,93 @@ const MarkersMap = ({ powerFilter, selectedConnectors }) => {
   const mapRef = useRef();
 
   const filteredStations = stations.filter(
-    (station) =>
-      (selectedConnectors.length === 0 ||
-        selectedConnectors.includes(station.connectorType)) &&
-      station.power >= powerFilter
-  );
+    station =>
+        (selectedConnectors.length === 0 ||
+         selectedConnectors.some(connector => 
+             connector.slice(0, 3).toLowerCase() === (station.connectorType?.slice(0, 3).toLowerCase()))) &&
+        station.power >= powerFilter
+);
 
-  useEffect(() => {
-    console.log("Rendering markers with connectors:", selectedConnectors);
-    console.log("And power filter:", powerFilter);
-  }, [selectedConnectors, powerFilter]);
 
-  const handleSearchChange = async (e) => {
-    const searchValue = e.target.value;
-    setSearchValue(searchValue);
-    if (searchValue) {
-      try {
-        const response = await axios.get(
-          `https://nominatim.openstreetmap.org/search?format=json&countrycodes=ma&q=${searchValue}`
-        );
-        console.log("Autocomplete response:", response.data);
-        setAutocompleteResults(response.data);
-      } catch (error) {
-        console.error("Error fetching autocomplete results:", error);
-      }
-    } else {
-      setAutocompleteResults([]);
-    }
-  };
+  
+  
+console.log("Selected Connectors:", selectedConnectors);
+console.log("Filtered Stations Count:", filteredStations.length);
+filteredStations.forEach(station => {
+    console.log(`Station Name: ${station.name}, Connector Type: ${station.connectorType}`);
+});
+console.log("Selected Connectors:", selectedConnectors.map(conn => conn.slice(0, 3).toLowerCase()));
+stations.forEach(station => {
+    console.log(`Station Name: ${station.name}, Connector Type First 3: ${station.connectorType?.slice(0, 3).toLowerCase()}`);
+});
 
-  const handleAutocomplete = async () => {
+  
+
+
+  const handleAddressSelect = async (address, placeId) => {
     try {
       const response = await axios.get(
-        `https://nominatim.openstreetmap.org/search?format=json&countrycodes=ma&q=${searchValue}`
+        `https://maps.googleapis.com/maps/api/geocode/json`,
+        {
+          params: {
+            address: address,
+            placeId: placeId,
+            key: "AIzaSyCuga0rxBnch_BCzWW1NA8WJdrTcvdfbpo",
+          },
+        }
       );
-      setAutocompleteResults(response.data);
+
+      if (response.data && response.data.results.length > 0) {
+        const { lat, lng } = response.data.results[0].geometry.location;
+        const newCenter = L.latLng(lat, lng);
+        setCenter(newCenter); // Update the center state
+
+        if (mapRef.current) {
+          mapRef.current.flyTo(newCenter, 13); // Adjust the zoom level as necessary
+        }
+      } else {
+        console.log("No results found");
+      }
     } catch (error) {
-      console.error("Error fetching autocomplete results:", error);
+      console.error("Failed to fetch coordinates:", error);
     }
   };
 
-  const handleResultSelect = (result) => {
-    if (mapRef.current) {
-      const map = mapRef.current;
-      map.flyTo([result.lat, result.lon], 13, {
-        animate: true,
-      });
-      setSearchValue(""); // Clears the search input after selection
-      setAutocompleteResults([]); // Clears the results after selection
-    }
-  };
-  const handleRoute = (destination) => {
-    const start =
-      routeStart ||
-      (location.loaded
-        ? [location.coordinates.lat, location.coordinates.lng]
-        : null);
+  const handleRoute = (station) => {
+    const destination = [station.latitude, station.longitude];
+    const start = location.loaded
+      ? [location.coordinates.lat, location.coordinates.lng]
+      : null;
+
     if (!start) {
-      alert("Start location is not specified or current location not loaded.");
+      alert("Current location is not loaded.");
       return;
     }
 
-    // Check if a routing control already exists and remove it
-    if (routingControlRef.current) {
-      routingControlRef.current.getPlan().setWaypoints([]); // Optionally clear waypoints
-      routingControlRef.current.removeFrom(mapRef.current); // Correctly remove the control from the map
-      routingControlRef.current = null; // Clear the ref
+    // If the station currently has a route displayed, clicking it again should remove the route.
+    if (selectedStation === station.gid && routingControlRef.current) {
+      // Clear existing routing control
+      if (routingControlRef.current) {
+        routingControlRef.current.getPlan().setWaypoints([]);
+        routingControlRef.current.remove(); // Ensuring we use the correct method to remove the routing control
+        routingControlRef.current = null;
+      }
+
+      // Reset selected station
+      setSelectedStation(null);
+      return;
     }
 
-    if (mapRef.current) {
+    // Clear any existing route before setting a new one,
+    // which ensures that only one route is displayed at a time.
+    if (routingControlRef.current) {
+      routingControlRef.current.getPlan().setWaypoints([]);
+      routingControlRef.current.remove(); // Make sure to use remove() method to properly clear the route from the map
+      routingControlRef.current = null;
+    }
+
+    // Set up new routing control only if a new route is to be created
+    if (mapRef.current && selectedStation !== station.gid) {
       const map = mapRef.current;
       const routingControl = L.Routing.control({
         waypoints: [
@@ -180,46 +215,53 @@ const MarkersMap = ({ powerFilter, selectedConnectors }) => {
         lineOptions: {
           styles: [{ color: "#6FA1EC", weight: 4 }],
         },
-        createMarker: () => null, // Suppress marker creation
+        createMarker: () => null,
         geocoder: L.Control.Geocoder.nominatim(),
+        addWaypoints: false,
+        draggableWaypoints: false,
+        itinerary: false,
       }).addTo(map);
 
-      // Listen to the 'routesfound' event
-      routingControl.on('routesfound', function(e) {
+      // Event listener for when a route is found
+      routingControl.on("routesfound", function (e) {
         const routes = e.routes;
         const summary = routes[0].summary;
-        // Extract coordinates from the route's coordinates to find the midpoint
         const routeCoords = routes[0].coordinates;
         const midIndex = Math.floor(routeCoords.length / 2);
         const middlePoint = routeCoords[midIndex];
 
-        // Create popup content with vehicle icon
+        // Popup content with Material Icon
         const popupContent = `
-          <div>
-            <img src="path/to/your/vehicle-icon.png" style="width: 24px; height: 24px; vertical-align: middle;">
-            <span>Distance: ${(summary.totalDistance / 1000).toFixed(2)} km</span><br>
-            <span>Duration: ${Math.round(summary.totalTime / 60)} minutes</span>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div>
+              <strong>Distance:</strong> ${(
+                summary.totalDistance / 1000
+              ).toFixed(2)} km<br>
+              <strong>Duration:</strong> ${Math.round(
+                summary.totalTime / 60
+              )} minutes
+            </div>
           </div>
         `;
 
-        // Create a marker at the midpoint
+        // Marker at the route midpoint
         L.marker(middlePoint, {
           icon: L.divIcon({
-            iconUrl: require("../assets/img/logo.png"),
-
-            className: '', // No default leaflet class for custom styling
-            html: popupContent,
-            iconSize: L.point(150, 50) // Adjust size based on your content
-          })
-        }).addTo(map).bindPopup(popupContent).openPopup();
+            className: "", // Custom class for styling if needed
+            iconSize: L.point(30, 30), // Small icon size for the map marker
+          }),
+        })
+          .addTo(map)
+          .bindPopup(popupContent)
+          .openPopup();
       });
 
-      // Store the routing control in the ref
+      // Store the routing control reference
       routingControlRef.current = routingControl;
+      setSelectedStation(station.gid);
     }
-};
-
-
+  };
+  
 
   const showMyLocation = () => {
     if (location.loaded && mapRef.current) {
@@ -233,11 +275,27 @@ const MarkersMap = ({ powerFilter, selectedConnectors }) => {
       );
     }
   };
+  const corner1 = L.latLng(18.0, -18.0); // Southwest corner (includes Mauritania)
+  const corner2 = L.latLng(38.0, 5.0); // Northeast corner (near Oujda)
 
   return (
     <Stack direction={"row"} height={"100%"}>
-      <Stack direction={"column"} height={"100%"} width={"100%"}>
-        <MapContainer center={center} zoom={7} zoomControl={false} ref={mapRef}>
+      <Stack
+        direction={"column"}
+        height={"100%"}
+        width={"100%"}
+        position={"relative"}
+      >
+        <MapContainer
+          center={center}
+          zoom={7}
+          minZoom={6}
+          maxZoom={18}
+          zoomControl={false}
+          ref={mapRef}
+          // bounds={boundingBox}
+          maxBounds={[corner1, corner2]} // Limit panning to these boundsnsure boundingBox is correctly calculated based on your data
+        >
           <LayersControl position="bottomleft">
             <LayersControl.BaseLayer checked name="Topo">
               <TileLayer
@@ -257,17 +315,17 @@ const MarkersMap = ({ powerFilter, selectedConnectors }) => {
                 attribution='Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under CC BY SA.'
               />
             </LayersControl.BaseLayer>
-           
           </LayersControl>
 
-          {/* Existing markers and components remain unchanged */}
+          {/* Marker for current location */}
           {location.loaded && !location.error && (
             <Marker
               icon={markerIcon}
               position={[location.coordinates.lat, location.coordinates.lng]}
-            ></Marker>
+            />
           )}
 
+          {/* Loading Indicator */}
           {loading && (
             <div
               style={{
@@ -282,125 +340,93 @@ const MarkersMap = ({ powerFilter, selectedConnectors }) => {
             </div>
           )}
 
+          {/* Station Markers */}
           {!loading &&
-            filteredStations.map((station) => {
-              let icon;
-              if (station.power >= 50) {
-                icon = evstationIcon_super_rapid;
-              } else if (station.power >= 7 && station.power < 50) {
-                icon = evstationIcon_fast;
-              } else if (station.power >= 2 && station.power <= 6) {
-                icon = evstationIcon_slow;
-              }
-
-              return (
-                <Marker
-                  key={station.gid}
-                  position={[station.latitude, station.longitude]}
-                  icon={icon}
-                >
-                  <Popup>
-                    <Stack spacing={1}>
-                      <Stack direction="row" alignItems="center">
-                        <h4 style={{ margin: "0" }}>{station.name}</h4>
-                      </Stack>
-                      <Stack direction="row" alignItems="center">
-                        <PlaceIcon
-                          style={{ marginRight: "5px", color: "#023047" }}
-                        />
-                        <p style={{ margin: "0" }}>{station.address}</p>
-                      </Stack>
-                      <Stack direction="row" alignItems="center">
-                        <BoltIcon
-                          style={{ marginRight: "5px", color: "#023047" }}
-                        />
-                        <p style={{ margin: "0" }}>
-                          {station.power} Kw{" "}
-                          {station.voltage ? ` / ${station.voltage} V` : ""}
-                        </p>
-                      </Stack>
-                      <Stack direction="row" alignItems="center">
-                        <PowerIcon
-                          style={{ marginRight: "5px", color: "#023047" }}
-                        />
-                        <p style={{ margin: "0" }}>
-                          {station.connector} ({station.quantity})
-                        </p>
-                      </Stack>
-                      <button
-                        onClick={() =>
-                          handleRoute([station.latitude, station.longitude])
-                        }
-                      >
-                        Route Here
-                      </button>
+            filteredStations.map((station) => (
+              <Marker
+                key={station.gid}
+                position={[station.latitude, station.longitude]}
+                icon={
+                  selectedStation === station.gid
+                    ? pinDropIcon
+                    : station.power >= 50
+                    ? evstationIcon_super_rapid
+                    : station.power >= 7
+                    ? evstationIcon_fast
+                    : evstationIcon_slow
+                }
+              >
+                <Popup>
+                  <Stack spacing={1}>
+                    {/* Station Name */}
+                    <Stack direction="row" alignItems="center">
+                      <h4 style={{ margin: "0" }}>{station.name}</h4>
                     </Stack>
-                  </Popup>
-                </Marker>
-              );
-            })}
+                    {/* Station Address */}
+                    <Stack direction="row" alignItems="center">
+                      <PlaceIcon
+                        style={{ marginRight: "5px", color: "#023047" }}
+                      />
+                      <p style={{ margin: "0" }}>{station.address}</p>
+                    </Stack>
+                    {/* Power Info */}
+                    <Stack direction="row" alignItems="center">
+                      <BoltIcon
+                        style={{ marginRight: "5px", color: "#023047" }}
+                      />
+                      <p style={{ margin: "0" }}>
+                        {station.power} Kw{" "}
+                        {station.voltage ? ` / ${station.voltage} V` : ""}
+                      </p>
+                    </Stack>
+                    {/* Connector Info */}
+                    <Stack direction="row" alignItems="center">
+                      <PowerIcon
+                        style={{ marginRight: "5px", color: "#023047" }}
+                      />
+                      <p style={{ margin: "0" }}>
+                        {station.connector} ({station.quantity})
+                      </p>
+                    </Stack>
+                    {/* Routing Button */}
+                    <button onClick={() => handleRoute(station)}>
+                      {selectedStation === station.gid
+                        ? "Stop Routing"
+                        : "Route Here"}
+                    </button>
+                  </Stack>
+                </Popup>
+              </Marker>
+            ))}
         </MapContainer>
+
         <Stack
           direction={"row"}
           position={"absolute"}
           alignItems={"center"}
           zIndex={1000}
-          spacing={3}
+          spacing={5}
           justifyContent={"space-between"}
+          left={"120px"}
+          marginTop={"26px"}
+          // justify-content: center;
+          // align-items: center;
         >
-          <div style={{ position: "relative", width: "320px" }}>
-            <OutlinedInput
+          <div style={{ width: "320px" }}>
+            <GoogleMapsAutocomplete
+              setAddress={handleAddressSelect}
               placeholder="Search in Morocco..."
-              value={searchValue}
-              onChange={handleSearchChange}
-              style={{
-                position: "relative",
-                backgroundColor: "white",
-                border: "none",
-                left: "70px",
-                marginTop: "20px",
-                width: "320px",
-                height: "50px",
-                borderRadius:
-                  autocompleteResults.length > 0 ? "25px 25px 0 0" : "25px",
-              }}
-              endAdornment={
-                <InputAdornment position="end">
-                  <IconButton edge="end" onClick={handleAutocomplete}>
-                    <FaSearch />
-                  </IconButton>
-                </InputAdornment>
-              }
+              style={{ backgroundColor: "white", borderRadius: "8px", borderRadius : "25px" }} // Specific styles
+              isMap={true}  // Ensure the specific styles and icons for the map are applied
+
             />
-            {autocompleteResults.length > 0 && (
-              <Paper
-                style={{
-                  position: "absolute",
-                  top: "100%",
-                  left: 0,
-                  width: "100%",
-                  maxHeight: "400px",
-                  overflowY: "auto",
-                  marginLeft: "70px",
-                  zIndex: 10,
-                }}
-              >
-                {autocompleteResults.map((result) => (
-                  <MenuItem
-                    key={result.place_id}
-                    onClick={() => handleResultSelect(result)}
-                  >
-                    {result.display_name}
-                  </MenuItem>
-                ))}
-              </Paper>
-            )}
           </div>
 
           <div
             onClick={showMyLocation}
             className="location-icon"
-            style={{ left: "380px", marginTop: "20px" }}
+            style={{ left: "300px" }}
+            // style={{ left: "380px", marginTop: "20px" }}
           >
             <IoCompassOutline />
           </div>
@@ -415,6 +441,6 @@ const MarkersMap = ({ powerFilter, selectedConnectors }) => {
       </Stack>
     </Stack>
   );
-};
+});
 
 export default MarkersMap;

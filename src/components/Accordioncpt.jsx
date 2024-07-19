@@ -1,4 +1,4 @@
- import * as React from "react";
+import * as React from "react";
 import { styled } from "@mui/material/styles";
 import ArrowForwardIosSharpIcon from "@mui/icons-material/ArrowForwardIosSharp";
 import MuiAccordion from "@mui/material/Accordion";
@@ -11,8 +11,6 @@ import { GrMapLocation } from "react-icons/gr";
 import ConnectorIcons from "./ConnectorIcons"; // Import ConnectorIcons component
 import { Stack, Grid } from "@mui/material"; // Import Stack and Grid
 import evstationIcon_slow from "./map";
-
-
 
 const Accordion = styled((props) => (
   <MuiAccordion disableGutters elevation={0} square {...props} />
@@ -55,11 +53,16 @@ export default function CustomizedAccordions({ onChange, onConnectorChange }) {
   const handlePowerChange = (event, newValue) => {
     setPowerValue(newValue); // Update power value state
   };
+  const handleSelectAll = (allSelected) => {
+    console.log(allSelected ? "All connectors selected" : "Not all connectors are selected");
+  };
   const handleConnectorChange = (selectedConnectors) => {
-    console.log("Received selected connectors in Accordion:", selectedConnectors);
+    console.log(
+      "Received selected connectors in Accordion:",
+      selectedConnectors
+    );
     onConnectorChange(selectedConnectors);
-};
-
+  };
 
   // Function to format the value of the slider
   const valuetext = (value) => {
@@ -70,8 +73,7 @@ export default function CustomizedAccordions({ onChange, onConnectorChange }) {
   const handleFilterChange = () => {
     console.log("Final power value being sent:", powerValue);
     onChange(powerValue);
-};
-
+  };
 
   const handleChange = (panel) => (event, newExpanded) => {
     setExpanded(newExpanded ? panel : false);
@@ -234,7 +236,7 @@ export default function CustomizedAccordions({ onChange, onConnectorChange }) {
                   borderRadius: "20px",
                 }}
               >
-                <ConnectorIcons onConnectorChange={handleConnectorChange} />
+<ConnectorIcons onConnectorChange={handleConnectorChange} onSelectAll={handleSelectAll} />
               </div>
             </Grid>
           </Grid>

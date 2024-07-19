@@ -161,10 +161,33 @@
     cursor: pointer;
     transition: background-color 0.2s ease; /* Add transition for smooth hover effect */
 }
-
 .location-icon:hover {
   background-color: #cccccc; /* Darker background color on hover */
 }
+
+.location_icon_form{
+    
+  
+  width: 25px;
+  height: 25px;
+  /* background-color: #000; */
+  z-index: 1000;
+  position: absolute;
+  font-size: 31px;
+   /* Adjust icon size as needed */
+   background-color: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease; /* Add transition for smooth hover effect */
+}
+.location_icon_form:hover {
+  background-color: #cccccc; /* Darker background color on hover */
+}
+
+
 .search-container {
     position: absolute;
     top: 10px;
@@ -269,4 +292,17 @@
   height: 1px; /* Height of the separator line */
   background-color: #ccc; /* Color of the separator */
   margin: 5px 0; /* Space above and below the separator */
+}
+.leaflet-routing-container {
+  display: none;
+}
+.leaflet-routing-container .leaflet-routing-alt {
+  display: none; 
+}
+
+.leaflet-control-container .leaflet-routing-container-hide {
+  display: none; 
+}
+.leaflet-marker-icon .leaflet-zoom-animated .leaflet-interactive{
+  display:none !important;
 }

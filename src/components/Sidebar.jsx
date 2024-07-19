@@ -1,18 +1,9 @@
- import React, { useState, useEffect } from "react";
-import MapWrapper from "../pages/MapWrapper";
-import MarkersMap from "./map";
-import {
-  FaTh,
-  FaBars,
-  FaTimes,
-  FaUserAlt,
-  FaRegChartBar,
-  FaCommentAlt,
-  FaShoppingBag,
-  FaThList,
-} from "react-icons/fa";
+import React, { useState, useEffect } from "react";
 
-import Input from "@mui/joy/Input";
+import MarkersMap from "./map";
+import { FaBars, FaTimes } from "react-icons/fa";
+
+import AddChargerModal from "./AddChargerModal";
 
 import CustomizedAccordions from "./Accordioncpt";
 // import AccordionDetails from '@mui/material/AccordionDetails';
@@ -20,34 +11,31 @@ import CustomizedAccordions from "./Accordioncpt";
 
 import { NavLink } from "react-router-dom";
 import { Grid, Stack } from "@mui/material";
+import { faLeftLong } from "@fortawesome/free-solid-svg-icons";
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const toggle = () => setIsOpen(!isOpen);
-
   const [powerFilter, setPowerFilter] = useState(0);
   const [selectedConnectors, setSelectedConnectors] = useState([]);
 
   // Example check for unnecessary re-renders
   useEffect(() => {
     console.log("MarkersMap rendering with", selectedConnectors);
-  }, [selectedConnectors]); // Check how often this logs when interacting with the sidebar
+  }, [selectedConnectors]); // Debugging to track re-renders
 
   const handlePowerChange = (newValue) => {
     setPowerFilter(newValue);
   };
-  const handleConnectorChange = (selected) => {
-    console.log("Updating selected connectors in Sidebar:", selected);
-    setSelectedConnectors(selected);
-  };
-  
-
-  
+  const handleConnectorChange = (connectors) => {
+    setSelectedConnectors(connectors);
+};
 
   return (
     <>
       {/* style={{width: isOpen ? "400px" : "50px"}} className="sidebar"÷ */}
       {/* style={{width: isOpen ? "74.2%" : "96.2%"}} */}
+
       <Grid container>
         {!isOpen && (
           <Grid item xs={0.3}>
@@ -103,14 +91,15 @@ const Sidebar = () => {
                   onChange={handlePowerChange}
                   onConnectorChange={handleConnectorChange}
                 />
+                <AddChargerModal />
               </div>
             </Stack>
           )}
         </Grid>
         <Grid item xs={isOpen ? 8.9 : 11.6}>
           <MarkersMap
-  powerFilter={powerFilter}
-  selectedConnectors={selectedConnectors}
+            powerFilter={powerFilter}
+            selectedConnectors={selectedConnectors}
           />
         </Grid>
       </Grid>
@@ -121,4 +110,3 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
-
