@@ -9,9 +9,9 @@ import CustomizedAccordions from "./Accordioncpt";
 // import AccordionDetails from '@mui/material/AccordionDetails';
 // import AccordionSummary from '@mui/material/AccordionSummary';
 
-import { NavLink } from "react-router-dom";
+// import { NavLink } from "react-router-dom";
 import { Grid, Stack } from "@mui/material";
-import { faLeftLong } from "@fortawesome/free-solid-svg-icons";
+// import { faLeftLong } from "@fortawesome/free-solid-svg-icons";
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);

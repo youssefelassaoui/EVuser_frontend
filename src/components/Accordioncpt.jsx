@@ -10,7 +10,7 @@ import Slider from "@mui/material/Slider";
 import { GrMapLocation } from "react-icons/gr";
 import ConnectorIcons from "./ConnectorIcons"; // Import ConnectorIcons component
 import { Stack, Grid } from "@mui/material"; // Import Stack and Grid
-import evstationIcon_slow from "./map";
+// import evstationIcon_slow from "./map";
 
 const Accordion = styled((props) => (
   <MuiAccordion disableGutters elevation={0} square {...props} />

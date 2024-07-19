@@ -3,22 +3,52 @@ import { Stack, Grid, Checkbox, Typography } from "@mui/material";
 
 const ConnectorIcons = ({ onConnectorChange, onSelectAll }) => {
   const icons = [
-    { src: require("../assets/img/chademo.svg").default, alt: "Connector 1", label: "CHAdeMO" },
-    { src: require("../assets/img/combo_css_type2_euro_1.svg").default, alt: "Connector 2", label: "CCS (Type 2)" },
-    { src: require("../assets/img/domestique_plug.svg").default, alt: "Connector 3", label: "Shukko" },
-    { src: require("../assets/img/three_phase3.svg").default, alt: "Connector 4", label: "Three Phase" },
-    { src: require("../assets/img/type_2.svg").default, alt: "Connector 5", label: "Type 2" },
-    { src: require("../assets/img/type1_j1772.svg").default, alt: "Connector 6", label: "J-1772" },
-    { src: require("../assets/img/tesla.svg").default, alt: "Connector 7", label: "Tesla" }
+    {
+      src: require("../assets/img/chademo.svg").default,
+      alt: "Connector 1",
+      label: "CHAdeMO",
+    },
+    {
+      src: require("../assets/img/combo_css_type2_euro_1.svg").default,
+      alt: "Connector 2",
+      label: "CCS (Type 2)",
+    },
+    {
+      src: require("../assets/img/domestique_plug.svg").default,
+      alt: "Connector 3",
+      label: "Shukko",
+    },
+    {
+      src: require("../assets/img/three_phase3.svg").default,
+      alt: "Connector 4",
+      label: "Three Phase",
+    },
+    {
+      src: require("../assets/img/type_2.svg").default,
+      alt: "Connector 5",
+      label: "Type 2",
+    },
+    {
+      src: require("../assets/img/type1_j1772.svg").default,
+      alt: "Connector 6",
+      label: "J-1772",
+    },
+    {
+      src: require("../assets/img/tesla.svg").default,
+      alt: "Connector 7",
+      label: "Tesla",
+    },
   ];
 
   // Initialize selectedIcons state with all connector labels
-  const [selectedIcons, setSelectedIcons] = useState(icons.map(icon => icon.label));
+  const [selectedIcons, setSelectedIcons] = useState(
+    icons.map((icon) => icon.label)
+  );
 
   // Handle icon selection toggle
   const toggleIconSelection = (label) => {
     const newSelection = selectedIcons.includes(label)
-      ? selectedIcons.filter(selected => selected !== label)
+      ? selectedIcons.filter((selected) => selected !== label)
       : [...selectedIcons, label];
     setSelectedIcons(newSelection);
     onConnectorChange(newSelection); // Notify the parent component
@@ -27,7 +57,8 @@ const ConnectorIcons = ({ onConnectorChange, onSelectAll }) => {
   // Handle select/deselect all
   const handleSelectAll = () => {
     const allIcons = icons.map((icon) => icon.label);
-    const newSelectedIcons = selectedIcons.length === allIcons.length ? [] : allIcons;
+    const newSelectedIcons =
+      selectedIcons.length === allIcons.length ? [] : allIcons;
     setSelectedIcons(newSelectedIcons);
     onSelectAll(newSelectedIcons.length === allIcons.length);
   };
@@ -35,7 +66,7 @@ const ConnectorIcons = ({ onConnectorChange, onSelectAll }) => {
   // Effect to set all selected on initial mount
   useEffect(() => {
     onSelectAll(true);
-  }, []); // Empty dependency array to ensure this runs only once on mount
+  }, [onSelectAll]); // Include onSelectAll in the dependency array
 
   return (
     <Stack direction="column">
@@ -47,10 +78,14 @@ const ConnectorIcons = ({ onConnectorChange, onSelectAll }) => {
       >
         <Checkbox
           checked={selectedIcons.length === icons.length}
-          indeterminate={selectedIcons.length > 0 && selectedIcons.length < icons.length}
+          indeterminate={
+            selectedIcons.length > 0 && selectedIcons.length < icons.length
+          }
           onChange={handleSelectAll}
         />
-        <Typography><b>All Connectors</b></Typography>
+        <Typography>
+          <b>All Connectors</b>
+        </Typography>
       </Stack>
       <Grid container spacing={1}>
         {icons.map((icon, index) => (
@@ -64,8 +99,12 @@ const ConnectorIcons = ({ onConnectorChange, onSelectAll }) => {
                   height: 50,
                   borderRadius: "50%",
                   cursor: "pointer",
-                  border: selectedIcons.includes(icon.label) ? "2px solid green" : "none",
-                  backgroundColor: selectedIcons.includes(icon.label) ? "rgba(0, 255, 0, 0.2)" : "transparent",
+                  border: selectedIcons.includes(icon.label)
+                    ? "2px solid green"
+                    : "none",
+                  backgroundColor: selectedIcons.includes(icon.label)
+                    ? "rgba(0, 255, 0, 0.2)"
+                    : "transparent",
                 }}
                 onClick={() => toggleIconSelection(icon.label)}
               />

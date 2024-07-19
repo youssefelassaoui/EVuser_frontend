@@ -3,21 +3,18 @@ import {
   Button,
   TextField,
   FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   Box,
   Typography,
   Modal,
   Stack,
   Grid,
-  Alert,
+  
 } from "@mui/material";
-import SimpleSnackbar from "./SnackbarAlert";
+// import SimpleSnackbar from "./SnackbarAlert";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import axios from "axios";
-import osm from "./osm-providers";
+// import osm from "./osm-providers";
 import useGeoLocation from "./useGeolocation";
 import { IoCompassOutline } from "react-icons/io5";
 import GoogleMapsAutocomplete from "./AutoCompleteInput";
@@ -29,7 +26,7 @@ function AddChargerModal() {
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
   const [power, setPower] = useState("20");
-  const [connectorType, setConnectorType] = useState("");
+  // const [connectorType, setConnectorType] = useState("");
   const [image, setImage] = useState(null);
   const location = useGeoLocation();
   const [center, setCenter] = useState({ lat: 32.420882, lng: -7.1394574 });
@@ -37,9 +34,9 @@ function AddChargerModal() {
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const handleClick = () => {
-    enqueueSnackbar("I love snacks.");
-  };
+  // const handleClick = () => {
+  //   enqueueSnackbar("I love snacks.");
+  // };
 
   const handleClickVariant = (variant) => () => {
     // variant could be success, error, warning, info, or default

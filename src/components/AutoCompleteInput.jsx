@@ -1,15 +1,11 @@
 // Import necessary components and hooks
 import React, { useState, useEffect, useRef } from "react";
-import { TextField, Box,InputAdornment } from "@mui/material";
+import { TextField, Box, InputAdornment } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
 import parse from "autosuggest-highlight/parse";
 import { debounce } from "@mui/material/utils";
-import SearchIcon from '@mui/icons-material/Search';
-import PlacesAutocomplete, {
-    geocodeByAddress,
-    getLatLng,
-  } from 'react-places-autocomplete';
-
+import SearchIcon from "@mui/icons-material/Search";
+// import { geocodeByAddress, getLatLng } from "react-places-autocomplete";
 
 // Ensure you have the Google Maps script loaded
 const loadGoogleMaps = (apiKey) => {
@@ -28,12 +24,16 @@ const loadGoogleMaps = (apiKey) => {
   });
 };
 
-const GoogleMapsAutocomplete = ({ setAddress, placeholder, label = "", style = {}, className = "", isMap = false }) => {
+const GoogleMapsAutocomplete = ({
+  setAddress,
+  placeholder,
+  label = "",
+  isMap = false,
+}) => {
   const [inputValue, setInputValue] = useState("");
   const [options, setOptions] = useState([]);
   const autocompleteService = useRef(null);
-  const [address, setAddressLocal] = React.useState("");
-
+  // const [setAddressLocal] = React.useState("");
 
   useEffect(() => {
     loadGoogleMaps("AIzaSyCuga0rxBnch_BCzWW1NA8WJdrTcvdfbpo")
@@ -64,20 +64,6 @@ const GoogleMapsAutocomplete = ({ setAddress, placeholder, label = "", style = {
       setOptions(results || []);
     });
   }, [inputValue, fetch]);
-  const handleSelect = async value => {
-        setAddressLocal(value);
-        geocodeByAddress(value)
-            .then(results => getLatLng(results[0]))
-            .then(latLng => console.log('Success', latLng))
-            .catch(error => console.error('Error', error));
-
-        setAddress(value);  // Pass the selected address back to the parent component
-    };
-
-    const handleChange = address => {
-        setAddressLocal(address);
-    };
-
 
   useEffect(() => {
     if (inputValue === "") {
@@ -90,36 +76,38 @@ const GoogleMapsAutocomplete = ({ setAddress, placeholder, label = "", style = {
     });
   }, [inputValue, fetch]);
 
-  
-
   return (
     <Autocomplete
-    freeSolo
-    inputValue={inputValue}
-    onInputChange={(event, newInputValue) => setInputValue(newInputValue)}
-    options={options}
-    getOptionLabel={(option) => typeof option === "string" ? option : option.description}
-    renderInput={(params) => (
+      freeSolo
+      inputValue={inputValue}
+      onInputChange={(event, newInputValue) => setInputValue(newInputValue)}
+      options={options}
+      getOptionLabel={(option) =>
+        typeof option === "string" ? option : option.description
+      }
+      renderInput={(params) => (
         <TextField
-        {...params}
-        label={label}
-        placeholder={placeholder}
-        variant="outlined"
-        fullWidth
-        InputProps={{
-          ...params.InputProps,
-          style: isMap ? { backgroundColor: 'white', borderRadius: '25px' } : {},
-          endAdornment: (
-            <InputAdornment justify-content= "flex-end" position="absolute" >
-              <SearchIcon />
-            </InputAdornment>
-          )
-        }}
-      />
-    )}
-    onChange={(event, newValue) => {
-      setAddress(newValue?.description || "");
-    }}
+          {...params}
+          label={label}
+          placeholder={placeholder}
+          variant="outlined"
+          fullWidth
+          InputProps={{
+            ...params.InputProps,
+            style: isMap
+              ? { backgroundColor: "white", borderRadius: "25px" }
+              : {},
+            endAdornment: (
+              <InputAdornment justify-content="flex-end" position="absolute">
+                <SearchIcon />
+              </InputAdornment>
+            ),
+          }}
+        />
+      )}
+      onChange={(event, newValue) => {
+        setAddress(newValue?.description || "");
+      }}
       renderOption={(props, option) => {
         const matches =
           option.structured_formatting.main_text_matched_substrings;
@@ -127,7 +115,6 @@ const GoogleMapsAutocomplete = ({ setAddress, placeholder, label = "", style = {
           option.structured_formatting.main_text,
           matches.map((match) => [match.offset, match.offset + match.length])
         );
-        
 
         return (
           <li {...props}>

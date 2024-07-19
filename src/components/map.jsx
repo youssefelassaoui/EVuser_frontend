@@ -7,7 +7,7 @@ import {
   LayersControl,
 } from "react-leaflet";
 import osm from "./osm-providers";
-import { FaSearch, FaUser } from "react-icons/fa";
+import { FaUser } from "react-icons/fa";
 import { IoCompassOutline } from "react-icons/io5";
 import useGeoLocation from "./useGeolocation";
 import L from "leaflet";
@@ -17,22 +17,13 @@ import BoltIcon from "@mui/icons-material/Bolt"; //power
 import PowerIcon from "@mui/icons-material/Power"; //connector
 import { CircularProgress } from "@mui/material";
 import "leaflet/dist/leaflet.css";
-import { MenuItem, Paper } from "@mui/material";
+// import { MenuItem, Paper } from "@mui/material";
 import "leaflet-routing-machine";
 import "leaflet-control-geocoder";
 import "@maptiler/sdk/dist/maptiler-sdk.css";
 import GoogleMapsAutocomplete from "./AutoCompleteInput";
 
-import {
-  Stack,
-  OutlinedInput,
-  IconButton,
-  InputAdornment,
-} from "@mui/material";
-
-import TopoIcon from "../assets/img/topo.png";
-import SatelliteIcon from "../assets/img/satellite.png";
-import BrightIcon from "../assets/img/bright.png";
+import { Stack } from "@mui/material";
 
 const pinDropIcon = new L.Icon({
   iconUrl: require("../assets/img/file.png"),
@@ -71,18 +62,12 @@ const MarkersMap = React.memo(({ powerFilter, selectedConnectors }) => {
   const [center, setCenter] = useState({ lat: 32.420882, lng: -7.1394574 });
   const location = useGeoLocation();
   const [stations, setStations] = useState([]);
-  const [searchValue, setSearchValue] = useState("");
-  const [autocompleteResults, setAutocompleteResults] = useState([]);
+
   const [loading, setLoading] = useState(false);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
-  const [routeStart, setRouteStart] = useState("");
-  const currentRoutingControl = useRef(null);
+
   const routingControlRef = useRef(null);
   const [selectedStation, setSelectedStation] = useState(null);
-  const boundingBox = [
-    [40.7128, -74.006], // Southwest corner [latitude, longitude]
-    [40.748817, -73.985428], // Northeast corner [latitude, longitude]
-  ];
 
   useEffect(() => {
     setLoading(true);
@@ -96,8 +81,8 @@ const MarkersMap = React.memo(({ powerFilter, selectedConnectors }) => {
             ...station,
             latitude,
             longitude,
-            connectorType: station.connector  // Confirm this is the correct field and has data
-        };
+            connectorType: station.connector, // Confirm this is the correct field and has data
+          };
         });
         setStations(parsedStations);
         setTimeout(() => {
@@ -116,28 +101,36 @@ const MarkersMap = React.memo(({ powerFilter, selectedConnectors }) => {
   const mapRef = useRef();
 
   const filteredStations = stations.filter(
-    station =>
-        (selectedConnectors.length === 0 ||
-         selectedConnectors.some(connector => 
-             connector.slice(0, 3).toLowerCase() === (station.connectorType?.slice(0, 3).toLowerCase()))) &&
-        station.power >= powerFilter
-);
+    (station) =>
+      (selectedConnectors.length === 0 ||
+        selectedConnectors.some(
+          (connector) =>
+            connector.slice(0, 3).toLowerCase() ===
+            station.connectorType?.slice(0, 3).toLowerCase()
+        )) &&
+      station.power >= powerFilter
+  );
 
-
-  
-  
-console.log("Selected Connectors:", selectedConnectors);
-console.log("Filtered Stations Count:", filteredStations.length);
-filteredStations.forEach(station => {
-    console.log(`Station Name: ${station.name}, Connector Type: ${station.connectorType}`);
-});
-console.log("Selected Connectors:", selectedConnectors.map(conn => conn.slice(0, 3).toLowerCase()));
-stations.forEach(station => {
-    console.log(`Station Name: ${station.name}, Connector Type First 3: ${station.connectorType?.slice(0, 3).toLowerCase()}`);
-});
-
-  
-
+  console.log("Selected Connectors:", selectedConnectors);
+  console.log("Filtered Stations Count:", filteredStations.length);
+  filteredStations.forEach((station) => {
+    console.log(
+      `Station Name: ${station.name}, Connector Type: ${station.connectorType}`
+    );
+  });
+  console.log(
+    "Selected Connectors:",
+    selectedConnectors.map((conn) => conn.slice(0, 3).toLowerCase())
+  );
+  stations.forEach((station) => {
+    console.log(
+      `Station Name: ${
+        station.name
+      }, Connector Type First 3: ${station.connectorType
+        ?.slice(0, 3)
+        .toLowerCase()}`
+    );
+  });
 
   const handleAddressSelect = async (address, placeId) => {
     try {
@@ -261,7 +254,6 @@ stations.forEach(station => {
       setSelectedStation(station.gid);
     }
   };
-  
 
   const showMyLocation = () => {
     if (location.loaded && mapRef.current) {
@@ -416,9 +408,10 @@ stations.forEach(station => {
             <GoogleMapsAutocomplete
               setAddress={handleAddressSelect}
               placeholder="Search in Morocco..."
-              style={{ backgroundColor: "white", borderRadius: "8px", borderRadius : "25px" }} // Specific styles
-              isMap={true}  // Ensure the specific styles and icons for the map are applied
-
+              style={{
+                backgroundColor: "white",
+              }} // Specific styles
+              isMap={true} // Ensure the specific styles and icons for the map are applied
             />
           </div>
 
